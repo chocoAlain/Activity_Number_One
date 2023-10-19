@@ -1,18 +1,36 @@
 <!DOCTYPE html>
-
-<!-- Database are auto generated, just turn on XAMPP Apache & MySQL -->
-<!-- The Database name is hanzph then the table is accounts -->
-
-<!-- Reference -->
-<!-- https://animatedbackgrounds.me/ For animated background -->
-<!-- https://uiverse.io/ For the button -->
-<!-- https://getbootstrap.com/ For the bootstrap -->
-
 <?php
 $imageLogo = 'https://bitbucket.org/chocoalain/online-files/raw/331a758d4cb12ca0c85e538381674bc3580e4498/1563190816830.png';
-databaseConnectivityAndGeneration();
-addData();
 ?>
+
+
+<?php
+    try{
+        $firstName = filter_input(INPUT_POST, 'firstName');
+        $lastName = filter_input(INPUT_POST, 'lastName');
+        $cellNum = (int)filter_input(INPUT_POST, 'cellNum');
+        $email = filter_input(INPUT_POST, 'email');
+        $username = filter_input(INPUT_POST, 'username');
+        $passes = filter_input(INPUT_POST, 'passw');
+        $address = filter_input(INPUT_POST, 'address');
+        if (!empty($firstName) || !empty($lastName) || !empty($cellNum) || !empty($email) || !empty($passes) || !empty($address)) {
+            echo "<script>localStorage.setItem('First Name', '$firstName');</script>";
+            echo "<script>localStorage.setItem('Last Name', '$lastName');</script>"; 
+            echo "<script>localStorage.setItem('Cellphone Number', '$cellNum');</script>"; 
+            echo "<script>localStorage.setItem('Email', '$email');</script>"; 
+            echo "<script>localStorage.setItem('Username', '$username');</script>"; 
+            echo "<script>localStorage.setItem('Password', '$passes');</script>"; 
+            echo "<script>localStorage.setItem('Address', '$address');</script>"; 
+        }
+        else{
+            echo "<script>console.log('Please fillup all boxes');</script>";
+        }
+    }
+    catch(Exception){
+        
+    }
+?>
+
 <html lang="en">
 
 <head>
@@ -211,7 +229,6 @@ addData();
     <script>
         function validate(evt) {
             var theEvent = evt || window.event;
-
             if (theEvent.type === 'paste') {
                 key = event.clipboardData.getData('text/plain');
             } else {
@@ -230,97 +247,5 @@ addData();
 
 </html>
 
-<?php
-function databaseConnectivityAndGeneration()
-{
-    try {
-        $servername = "localhost";
-        $username = "root";
-        $password = "";
-        $databaseName = "hanzph";
-        $conn = new mysqli($servername, $username, $password);
-        if ($conn->connect_error) {
-            die("<script>alert('Connection failed: " . $conn->connect_error . ", Try to start Apache and My SQL in XAMPP.');</script>");
-        } else {
-            try {
-                new mysqli($servername, $username, $password, $databaseName);
-                echo "<script>console.log('Database is already created');</script>";
-            } catch (Exception) {
-                // Creating Local Database To your Device kasi iba na computer imo gamit
-                echo "<script>console.log('Creating Database');</script>";
-                $conn->query("CREATE DATABASE $databaseName");
-                try {
-                    echo "<script>console.log('Creating Table');</script>";
-                    $connected = new mysqli($servername, $username, $password, $databaseName);
-                    // Create Table narin para sure
-                    $sql = "CREATE TABLE accounts (
-                        id int NOT NULL AUTO_INCREMENT,
-                        firstname VARCHAR(30) NOT NULL,
-                        lastname VARCHAR(30) NOT NULL,
-                        email VARCHAR(50),
-                        pass VARCHAR(50),
-                        contact_Number VARCHAR(15),
-                        username VARCHAR(50),
-                        address VARCHAR(200),
-                        PRIMARY KEY (id)
-                        )";
 
-                    if ($connected->query($sql) === TRUE) {
-                        echo "<script>console.log('Table created successfully');</script>";
-                    } else {
-                        echo "<script>console.log('Error creating table: " . $conn->error . "');</script>";
-                        $connected->close();
-                    }
-                } catch (Exception $e) {
-                    echo "<script>console.log('Error creating table');</script>";
-                }
-            }
-        }
-    } catch (Exception) {
-        echo "<script>alert('Check server');</script>";
-    }
-}
-function addData()
-{
-    $firstName = filter_input(INPUT_POST, 'firstName');
-    $lastName = filter_input(INPUT_POST, 'lastName');
-    $cellNum = (int)filter_input(INPUT_POST, 'cellNum');
-    $email = filter_input(INPUT_POST, 'email');
-    $username = filter_input(INPUT_POST, 'username');
-    $passes = filter_input(INPUT_POST, 'passw');
-    $address = filter_input(INPUT_POST, 'address');
-    if (!empty($firstName) || !empty($lastName) || !empty($cellNum) || !empty($email) || !empty($passes) || !empty($address)) {
-        $conn = new mysqli("localhost", "root", "", "hanzph");
-        if (mysqli_connect_error()) {
-            die('Connect Error (' . mysqli_connect_error() . ')' . mysqli_connect_error());
-        } else {
-            $insertData = "INSERT INTO accounts (contact_Number, firstname, lastname, email,pass , username, address) VALUES ('" . $cellNum . "','" . $firstName . "','" . $lastName . "','" . $email . "','" . $passes . "','" . $username . "','" . $address . "')";
-            if ($conn->query($insertData)) {
-                echo "<script>
-                console.log('Data Added');
-                if (confirm(`Register Successful
-            Do you want to check the database?`) == true) {
-                    window.location.href = 'http://localhost/phpmyadmin/index.php?route=/sql&db=hanzph&table=accounts&pos=0';
-                } else {
-                    window.history.back();
-                }
-            </script>
-            ";
-            } else {
-                echo "<script>console.log('DATA not Added')</script>";
-                echo "<script>
-                            if (confirm('Double Primary ID, Please try again!')) {
-                                window.history.back(-1);
-                            } else {
-                                window.location.href = './index.php';
-                            }
-                        </script>";
-            }
-            $conn->close();
-        }
-    } else {
-        echo "<script>console.log('Please fillup all boxes');</script>";
-    }
-}
-?>
 
